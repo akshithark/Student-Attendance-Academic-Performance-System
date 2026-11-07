@@ -1,1 +1,62 @@
-const {Builder,By,until}=require('selenium-webdriver');(async()=>{let d=await new Builder().forBrowser('chrome').build();try{await d.get('http://localhost:3000');await d.wait(until.elementLocated(By.id('name')),10000);await d.findElement(By.id('login')).click();await d.wait(until.elementTextContains(d.findElement(By.id('message')),'successful'),5000);await d.findElement(By.id('name')).sendKeys('Selenium Student');await d.findElement(By.id('roll')).sendKeys('E2E'+Date.now());await d.findElement(By.id('dept')).sendKeys('CSE');await d.findElement(By.id('addStudent')).click();await d.wait(until.elementTextContains(d.findElement(By.id('message')),'Student added'),5000);console.log('SELENIUM PASS: faculty login and student registration')}finally{await d.quit()}})().catch(e=>{console.error(e);process.exit(1)});
+
+const { Builder, By, until } = require('selenium-webdriver');
+
+(async () => {
+    const driver = await new Builder()
+        .forBrowser('chrome')
+        .build();
+
+    try {
+        // Open Attendance application
+        await driver.get('http://localhost:3002');
+
+        // Faculty login
+        await driver.findElement(By.id('user')).clear();
+        await driver.findElement(By.id('user')).sendKeys('faculty');
+
+        await driver.findElement(By.id('pass')).clear();
+        await driver.findElement(By.id('pass')).sendKeys('faculty123');
+
+        await driver.findElement(By.id('login')).click();
+
+        // Wait for student registration form
+        await driver.wait(
+            until.elementLocated(By.id('name')),
+            10000
+        );
+
+        // Register a student
+        await driver.findElement(By.id('name'))
+            .sendKeys('Selenium Student');
+
+        await driver.findElement(By.id('roll'))
+            .sendKeys('E2E' + Date.now());
+
+        await driver.findElement(By.id('dept'))
+            .sendKeys('CSE');
+
+        await driver.findElement(By.id('email'))
+            .sendKeys('selenium@test.com');
+
+        await driver.findElement(By.id('addStudent')).click();
+
+        // Verify registration
+        await driver.wait(
+            until.elementTextContains(
+                driver.findElement(By.id('message')),
+                'Student added'
+            ),
+            10000
+        );
+
+        console.log(
+            'SELENIUM PASS: Faculty login and student registration'
+        );
+
+    } finally {
+        await driver.quit();
+    }
+})().catch(error => {
+    console.error(error);
+    process.exit(1);
+});
